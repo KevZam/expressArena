@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 
 const app = express();
-app.use(morgan("dev"));
+app.use(morgan("common"));
 
 app.get("/", (req, res) => {
   res.send("Hello Express!");
@@ -76,6 +76,51 @@ app.get("/cipher", (req, res) => {
 
   const arr3 = arr2.join("");
   res.send(arr3);
+});
+
+app.get("/lotto", (req, res) => {
+  const { arr } = req.query;
+  let nums = [];
+  let matches = 0;
+  let response = {
+    text: "",
+    numMatches: matches
+  };
+
+  // generate random lotto numbers
+  for (let i = 0; i < 6; i++) {
+    nums.push(Math.floor(Math.random() * (+21 - +1)) + +1);
+  }
+
+  // loop through the lotto numbers one by one and check to see if it is equal to any of the query nums
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 6; j++) {
+      if (parseInt(arr[i]) == parseInt(nums[j])) {
+        console.log(`${parseInt(arr[i])} matches ${parseInt(nums[j])}!`);
+        matches += 1;
+      }
+    }
+  }
+
+  // handle each case for how many matches we get
+  switch (matches) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      response.text = "Sorry, you lose";
+      break;
+    case 4:
+      response.text = "Congratulations, you win a free ticket";
+      break;
+    case 5:
+      response.text = "Congratulations! You win $100!";
+      break;
+    case 6:
+      response.text =
+        "Wow! Unbelievable! You could have won the mega millions!";
+  }
+  res.send(`There were ${matches} matches. ${response.text}`);
 });
 
 //Response data
